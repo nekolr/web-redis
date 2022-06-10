@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import reactor.core.publisher.Mono;
 
+import java.util.Optional;
+
 @Component
 public class RedisService {
 
@@ -26,7 +28,16 @@ public class RedisService {
         if (!StringUtils.hasText(key)) {
             return Mono.just(Result.fail("key is empty"));
         }
-        return redisUtil.get(key).map(v -> Result.success(v));
+        return redisUtil.get(key)
+                .flatMap(o -> Mono.just(Optional.of(o)))
+                .defaultIfEmpty(Optional.empty())
+                .flatMap(op -> {
+                    if (op.isPresent()) {
+                        return Mono.just(Result.success(op.get()));
+                    } else {
+                        return Mono.just(Result.fail("key not found"));
+                    }
+                });
     }
 
     public Mono<Result> set(String key, Object value) {
