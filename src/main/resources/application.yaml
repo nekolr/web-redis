@@ -1,0 +1,16 @@
+server:
+  port: 8091
+
+spring:
+  application:
+    name: web-redis
+  jackson:
+    time-zone: GMT+8
+  redis:
+    host: redis
+    port: 6379
+    database: 0
+    client-type: lettuce
+
+security:
+  token: ${WEB_REDIS_TOKEN:dress}

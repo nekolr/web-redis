@@ -1,0 +1,29 @@
+version: '3.9'
+
+services:
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - /app/data:/data
+    command:
+      - "--save 60 10"
+    networks:
+      - web_redis_net
+  web-redis:
+    build:
+      context: ../.
+    image: nekolr/web-redis:latest
+    container_name: web-redis
+    ports:
+      - "8091:8091"
+    depends_on:
+      - redis
+    networks:
+      - web_redis_net
+
+networks:
+  web_redis_net:
+    driver: bridge
