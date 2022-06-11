@@ -2,6 +2,8 @@ package com.github.nekolr.security;
 
 import com.alibaba.fastjson2.JSON;
 import com.github.nekolr.pojo.Result;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -15,6 +17,8 @@ import reactor.core.publisher.Mono;
 @Component
 public class WebRedisFilter implements WebFilter {
 
+    private static final Logger logger = LoggerFactory.getLogger(WebRedisFilter.class);
+
     private static final String TOKEN_HEADER_NAME = "Authorization";
 
     private String token;
@@ -26,6 +30,9 @@ public class WebRedisFilter implements WebFilter {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+        String requestURI = exchange.getRequest().getURI().getPath();
+        String hostAddress = exchange.getRequest().getRemoteAddress().getAddress().getHostAddress();
+        logger.info("request uri: [ {} ] ip address: [ {} ]", requestURI, hostAddress);
         String original = exchange.getRequest().getHeaders().getFirst(TOKEN_HEADER_NAME);
         if (StringUtils.hasText(original) && token.equals(original)) {
             return chain.filter(exchange);
