@@ -6,7 +6,7 @@ WORKDIR /usr/src/app
 COPY . .
 RUN mvn clean package
 
-
+# 模拟无效提交
 FROM openjdk:17-slim
 
 COPY --from=build /usr/src/app/target/web-redis.jar .
